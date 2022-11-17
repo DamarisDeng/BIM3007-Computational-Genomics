@@ -1,0 +1,6 @@
+        FID         IID       O(HOM)       E(HOM)        N(NM)            F
+  CHS-BEB_1   CHS-BEB_1       109072    1.106e+05       135730     -0.06128
+  CHS-CEU_1   CHS-CEU_1       108646    1.106e+05       135730     -0.07824
+  CHS-ITU_1   CHS-ITU_1       109137    1.106e+05       135730     -0.05869
+     CHSDel      CHSDel       111913    1.106e+05       135730      0.05182
+   CHSHet01    CHSHet01       108194    1.105e+05       135608     -0.09323

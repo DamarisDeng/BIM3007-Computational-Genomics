@@ -1,0 +1,8 @@
+  id1_1202   id2_1202            2            0      PROBLEM       0.6545
+  id1_1109   id2_1109            2            0      PROBLEM       0.7954
+  id1_0108   id2_0108            2            0      PROBLEM       0.3521
+ CHSHet002  CHSHet002            1            0      PROBLEM       0.6779
+   id1_300    id2_300            1            2      PROBLEM      0.03826
+   id1_301    id2_301            2            1      PROBLEM            1
+   id1_500    id2_500            1            2      PROBLEM      0.01425
+   id1_501    id2_501            2            1      PROBLEM            1
