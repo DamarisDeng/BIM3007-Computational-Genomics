@@ -2,7 +2,7 @@
 
 Author: Junyang Deng 120090791
 
-Date: Nov 11 2022
+Date: Dec 4 2022
 
 ### Requirement
 
@@ -86,7 +86,7 @@ First check heterozygosity
 
 Output file: `step3.het`
 
-<img src="image/step3-het.png" alt="step3-het" style="zoom:50%;" />
+<img src="image/step3-het.png" alt="step3-het" style="zoom:35%;" />
 
 ```bash
 ~/plink --bfile step2-rm-missing --indep-pairwise 50 5 0.1 --out step3-LD
@@ -112,7 +112,7 @@ Check the heterozygosity rate again using the pruned data
 
 Output file: `step3-pruned.het`
 
-<img src="image/step3-pruned-het.png" alt="step3-pruned-het" style="zoom:50%;" />
+<img src="image/step3-pruned-het.png" alt="step3-pruned-het" style="zoom:35%;" />
 
 A barplot is drawn from `step3-pruned.het` as follow (the red dashed lines are on `y=-0.05` and `y=0.05` separately). Then, removed samples with abnormal rate of heterozygosity. 
 
@@ -132,7 +132,7 @@ ggplot(data=data, aes(x=n,y=F))+
   xlim(c(0, 1000))
 ```
 
-<img src="image/plot-heterozygosity-rate.png" alt="step3-pruned-het" style="zoom:40%;" />
+<img src="image/plot-heterozygosity-rate.png" alt="step3-pruned-het" style="zoom:35%;" />
 
 
 
@@ -143,12 +143,6 @@ awk '$6 > 0.05 || $6 < -0.05' step3-pruned.het | less > fail-het-check.txt
 ```
 
 <img src="image/fail-het-check.png" alt="fail-het-check" style="zoom:40%;" />
-
-```bash
-~/plink --bfile step3-LD-pruned --remove fail-het-check.txt --make-bed --out step3-het-pruned
-```
-
-Result: `5` samples are removed. (996 people remained.)
 
 #### 3.4 remove IBD
 
@@ -171,18 +165,6 @@ awk '{ if ($10 > 0.185) print $0 }' step4-IBD.genome > fail-IBD.txt
 ```
 
 <img src="image/related.png" alt="related" style="zoom:50%;" />
-
-Remove them:
-
-```bash
-~/plink --bfile step3-het-pruned --remove fail-IBD.txt --make-bed --out step4-IBD-pruned
-```
-
-Result:
-
-```
---remove: 994 people remaining
-```
 
 #### 3.5 Solve the stratification problem
 
@@ -211,6 +193,24 @@ ggplot(data=data)+
 
 We can see from the PCA scatter plot and the variance plot that the sample is very homogenous. Therefore nothing should be removed.
 
+#### Remove all the samples that fail the quality test
+
+```bash
+# first combine ids in different files
+cat fail-* | sort -k1 | uniq > fail-qc-samples.txt
+# then remove these files from the step2 bfile
+~/plink --bfile ../data/step2-rm-missing --remove fail-qc-samples.txt --make-bed --out qced-samples
+```
+
+Result:
+
+```
+1001 people (403 males, 598 females) loaded from .fam.
+995 phenotype values loaded from .fam.
+--remove: 991 people remaining.
+Warning: At least 8 duplicate IDs in --remove file.
+```
+
 ### 4. Perform QC for genetic variants
 
 #### 4.1 (Step 6) Identify and remove low minor allele frequency SNPs
@@ -225,9 +225,10 @@ output: `step6-maf.frq`
 Result:
 
 ```
-415 variants removed due to minor allele threshold(s)
-137725 variants and 994 people pass filters and QC.
-Among remaining phenotypes, 490 are cases and 498 are controls.  (6 phenotypes
+997 variants removed due to minor allele threshold(s)
+(--maf/--max-maf/--mac/--max-mac).
+481091 variants and 991 people pass filters and QC.
+Among remaining phenotypes, 489 are cases and 496 are controls.  (6 phenotypes
 are missing.)
 ```
 
@@ -243,7 +244,7 @@ Result
 
 ```
 0 people removed due to missing genotype data (--mind).
-14 variants removed due to missing genotype data (--geno).
+48 variants removed due to missing genotype data (--geno).
 ```
 
 #### 4.3 (Step 8) Remove SNP with differentially missingness
@@ -254,7 +255,7 @@ Result
 
 Output: `step8-dif-miss.missing`
 
-<img src="image/dif-mis.png" alt="dif-mis" style="zoom:50%;" />
+<img src="image/dif-mis.png" alt="dif-mis" style="zoom:35%;" />
 
 <img src="image/plot-dif-miss.png" alt="plot-dif-miss" style="zoom:35%;" />
 
@@ -284,7 +285,7 @@ Result:
 
 ```
 --hwe: 8 variants removed due to Hardy-Weinberg exact test.
-137703 variants and 994 people pass filters and QC.
+481035 variants and 991 people pass filters and QC.
 ```
 
 ### 5. Perform association tests, show Manhattan plot
@@ -299,42 +300,22 @@ Output: `qc.assoc`
 
 <img src="image/qc-assoc-test.png" alt="qc-assoc-test" style="zoom:50%;" />
 
-做到这
-
 Use R to find the most significant allele
 
 ```R
 data <- read.table('./qc.assoc', header=T)
-head(data)
-sorted <- data[order(data$P),]
-
 data[which.min(data$P),]
 ```
 
 Output
 
-<img src="image/R-qc-sorted.png" alt="R-qc-sorted" style="zoom:40%;" />
-
-<img src="image/R-qced-assoc-test.png" alt="R-qced-assoc-test" style="zoom:60%;" />
-
-Before QC
-
-<img src="image/before-qc.png" alt="before-qc" style="zoom:50%;" />
-
-
+<img src="image/R-qced-assoc-test.png" alt="R-qced-assoc-test" style="zoom:40%;" />
 
 Manhattan plots before and after QC
 
-```R
-# sample code
-library(qqman)
-test <- read.table('./qc.assoc', header=T) # or before-qc.assoc
-manhattan(test, main="Manhattan Plot", ylim=c(0,25), cex=0.6, cex.axis=0.9, col=c("blue4", "orange3"), chrlabs=c(1:22, "P","Q"))
-```
+<img src="image/before-qc.jpeg" alt="before" style="zoom: 33%;" />
 
-<img src="image/before-qc-man.png" alt="before-qc-man" style="zoom: 33%;" />
-
-<img src="image/qc-man.png" alt="qc-man" style="zoom: 33%;" />
+<img src="image/plot-man-qc.jpeg" alt="qc-man" style="zoom: 33%;" />
 
 ### QQ plot
 
@@ -348,7 +329,7 @@ gwasResults <- read.table('./before-qc.assoc', header=T)
 p_value2 <- gwasResults$P
 z2 <- qnorm(p_value2 / 2)
 lambda2 <- round(median(z2^2, na.rm = TRUE) / 0.454, 3)
-lambda
+lambda2
 ```
 
 `[1] 1.195`
@@ -358,24 +339,28 @@ lambda
 qq(gwasResults$P, main = "Q-Q plot of GWAS p-values (No QC)", xlim = c(0, 7), ylim = c(0,12), pch = 18, col = "blue4", cex = 1, las = 1)
 ```
 
-<img src="image/qqplot-no-qc.png" alt="qqplot-qc" style="zoom:50%;" />
+<img src="image/qqplot-no-qc.png" alt="qqplot-qc" style="zoom:35%;" />
 
 After QC
-
-```R
-# inflation
-gwasResult <- read.table('./qc.assoc', header=T)
-p_value <- gwasResult$P
-z <- qnorm(p_value / 2)
-lambda <- round(median(z^2, na.rm = TRUE) / 0.454, 3) # qchisq(0.5, 1)=0.454
-```
-
-`[1] 1.02`
 
 ```R
 # QQ plot
 qq(gwasResult$P, main = "Q-Q plot of GWAS p-values (QCed)", xlim = c(0, 7), ylim = c(0,    12), pch = 18, col = "blue4", cex = 1.5, las = 1)
 ```
 
-<img src="image/qqplot-qc.png" alt="qqplot-qc" style="zoom:50%;" />
+<img src="image/qqplot-qc.png" alt="qqplot-qc" style="zoom:35%;" />
+
+We can also calculate the inflation factor using `PLINK`
+
+```bash
+~/plink --bfile chrAll.ASA --adjust --assoc # before qc, lambda is 1.189
+```
+
+<img src="image/inflation-1.png" alt="inflation1" style="zoom: 33%;" />
+
+```bash
+~/plink --bfile step9-hwe --adjust --assoc # after qc, lambda becomes 1.019
+```
+
+<img src="image/inflation-2.png" style="zoom:30%;" />
 
