@@ -1,6 +1,0 @@
-       FID1       IID1       FID2       IID2 RT    EZ      Z0      Z1      Z2  PI_HAT PHE       DST     PPC   RATIO
-    CHSQUAD         C1    CHSQUAD         C2 OT     0  0.2413  0.4336  0.3252  0.5419  -1  0.922887  1.0000 11.4680
-    CHSQUAD         C1    CHSQUAD         F1 OT     0  0.0000  0.9920  0.0080  0.5040   0  0.908190  1.0000      NA
-    CHSQUAD         C1    CHSQUAD         M1 OT     0  0.0000  0.9982  0.0018  0.5009  -1  0.907611  1.0000      NA
-    CHSQUAD         C2    CHSQUAD         F1 OT     0  0.0000  0.9906  0.0094  0.5047   0  0.908315  1.0000      NA
-    CHSQUAD         C2    CHSQUAD         M1 OT     0  0.0000  1.0000  0.0000  0.5000  -1  0.907449  1.0000      NA

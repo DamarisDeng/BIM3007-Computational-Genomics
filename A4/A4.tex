@@ -64,16 +64,28 @@
 \begin{enumerate}
     \item Please write a python script to extract the positive dataset and the negative dataset (13-mer) from the raw dataset (\texttt{Ubiquitination\_sites.txt}), and use CD-HIT program with cut-off values of sequence similarity of 80\% to remove the homologous sequences of both datasets. Please provide a table for the data statistics of positive and negative sequences before and after removing the homologous sequences. (30 points)
     
-    The Python script used to extract the (13-mer) positive and negative dataset is named \texttt{processing.py}. After running the script, \texttt{positive.fasta} and \texttt{negative.fasta} were generated since \texttt{.fasta} file is needed for CD-HIT. Name for sequences are just numbers. 
-    
-    Note that sometimes there are no six residues flanking the modified K when K is near the end of the sequence, at this time, \textbf{Xs are used as placeholders}. Statistics before and after removing homologous sequences is shown in Table~\ref{tab:statistics}. 
+    The Python script used to extract the (13-mer) positive and negative dataset is named \texttt{processing.py}. The program did the following things:
+    \begin{enumerate}
+        \item For a site in a protein sequence, a sequence fragment with $2n + 1$ amino acids
+        is constructed by taking $n$ upstream residues and n downstream residues from the site, respectively. The $n$ here is $6$;
+        \item When the residues are not enough, e.g. for the sites located in N- or C-terminus,
+        assign a non-existing residue X to fill in the corresponding position;
+        \item Delete the negative sequences where a real ubiquitination site is involved.
+    \end{enumerate}
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.7\linewidth]{images/illustration.png}
+        \caption{An illustration of what the program does}
+        \label{fig:illustrate}
+    \end{figure}
+    These steps are illustrated by Figure~\ref{fig:illustrate}. After running the script, \texttt{positive.fasta} and \texttt{negative.fasta} were generated since \texttt{.fasta} file is needed for CD-HIT. Names for sequences are just numbers. The output of CD-HIT is \texttt{positive\_80.fasta} and \texttt{negative\_80.fasta}. Statistics before and after removing homologous sequences is shown in Table~\ref{tab:statistics}. 
 
     \begin{table}[htbp]
         \centering\begin{tabular}{lll}
             \hline
             & Positive & Negative \\ \hline
-     Before & 8,000    & 32,141   \\
-     After  & 7,429    & 39,291   \\ \hline
+     Before & 8,000    & 39,291   \\
+     After  & 7,429    & 32,141   \\ \hline
      \end{tabular}
         \caption{Data statistics before and after removing homologous sequences}
         \label{tab:statistics}
@@ -81,50 +93,57 @@
 
     \item After the removal of homologous sequences, please apply WebLogo tool to generate sequence logos for positive sequences and negative sequences, respectively. Then, please employ TwoSampleLogo tool to conduct the comparison of position-specific AAC between positive and negative data. (15 points)
     
-    \textbf{One sample logo}:
+    \textbf{One sample logo}: The logo of positive and negative sequences are shown in Figure~\ref{fig:pos-logo} and \ref{fig:neg-logo}. Two plots look identical with K standing in the middle. Since only K is visible in this plot, and no information is shown here, two zoomed logo plots are also given in Figure~\ref{fig:pos-zoom} and \ref{fig:neg-zoom}. Now, more information is shown. Besides logo plot, probability plots are shown in Figure~\ref{fig:pos-prob} and \ref{fig:neg-prob}. 
     
     \begin{figure}[htbp]
         \parbox{0.5\linewidth}{
             \centering
             \includegraphics[width=\linewidth]{images/positive_logo.png}
             \caption{Logo of positive sequences}
+            \label{fig:pos-logo}
         }
         \hfill
         \parbox{0.5\linewidth}{
             \centering
             \includegraphics[width=\linewidth]{images/negative_logo.png}
             \caption{Logo of negative sequences}
+            \label{fig:neg-logo}
         }
     \end{figure}
     \begin{figure}[htbp]
         \parbox{0.5\linewidth}{
             \centering
-            \includegraphics[width=\linewidth]{images/negative_logo_zoom.png}
-            \caption{Logo of negative sequences (zoom-in)}
+            \includegraphics[width=\linewidth]{images/positive_logo_zoom.png}
+            \caption{Logo of positive sequences (zoom-in)}
+            \label{fig:pos-zoom}
         }
         \hfill
         \parbox{0.5\linewidth}{
             \centering
-            \includegraphics[width=\linewidth]{images/positive_logo_zoom.png}
-            \caption{Logo of positive sequences (zoom-in)}
+            \includegraphics[width=\linewidth]{images/negative_logo_zoom.png}
+            \caption{Logo of negative sequences (zoom-in)}
+            \label{fig:neg-zoom}
         }
     \end{figure}
     \begin{figure}[htbp]
         \parbox{0.5\linewidth}{
             \centering
             \includegraphics[width=\linewidth]{images/positive_prob.png}
-            \caption{Probability of amino acids in different sites of positive sequences}
+            \caption{Probability plot of positive sequences}
+            \label{fig:pos-prob}
         }
         \hfill
         \parbox{0.5\linewidth}{
             \centering
-            
             \includegraphics[width=\linewidth]{images/negative_prob.png}
-            \caption{Probability of amino acids in different sites of negative sequences}
+            \caption{Probability plot of negative sequences}
+            \label{fig:neg-prob}
         }
     \end{figure}
 
-    \textbf{Two sample logo: }Comparing between 7,429 positive and 39,291 negative sequences, it is realized that Q is frequently enriched in the flanking region of ubiquitination sites. It is also noticable that K is often depleted in the positive samples. The two sample logo plot generated by TwoSampleLogo is shown in Figure~\ref{fig:twosample}
+
+    \textbf{Two sample logo: }Comparing between 7,429 positive and 32,141 negative sequences, it is realized that Q is frequently enriched in the flanking region of ubiquitination sites. It is also noticable that K is often depleted in the positive samples. The two sample logo plot generated by TwoSampleLogo is shown in Figure~\ref{fig:twosample}
+
     \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.8\linewidth]{images/twosamplelogo.png}
